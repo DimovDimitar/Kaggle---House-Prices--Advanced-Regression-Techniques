@@ -129,6 +129,7 @@ test_data.info()
 # ----------------------------------------------------------------- #
 # Next step are: do some visualisation and imputation of missing values
 
+y_train = train_data["SalePrice"]    
 
 col_names = list(train_data.columns.values)
 for col in col_names:
@@ -136,8 +137,6 @@ for col in col_names:
     
 # ----------------------------------------------------------------- #
 # Time to merge the two
-
-y_train = train_data["SalePrice"]    
 
 full_data = pd.concat([train_data, test_data], ignore_index = True)
 full_data = full_data.drop(["SalePrice"], axis=1)
@@ -199,14 +198,14 @@ X_test_scaled_r = robust_scaler.transform(X_test)
 X_train_scaled_ma = max_abs_scaler.fit(X_train).transform(X_train)
 X_test_scaled_ma = max_abs_scaler.transform(X_test)
 
-full_data2 = pd.concat([X_train, X_test])
+#full_data2 = pd.concat([X_train, X_test])
 
 # ----------------------------------------------------------------- #
 # Next step - applying models. Split X-train and X-test. Check equal dimensions
 
-X_train_scaled = full_data2[:train_data.shape[0]]
-X_test_scaled = full_data2[train_data.shape[0]:]
-X_train_scaled.shape, X_test_scaled.shape, y_train_transformed.shape
+#X_train_scaled = full_data2[:train_data.shape[0]]
+#X_test_scaled = full_data2[train_data.shape[0]:]
+X_train_scaled_r.shape, X_test_scaled_r.shape, y_train_transformed_r.shape
 #((1460, 49), (1459, 49), (1460,))
 
 from sklearn.linear_model import LinearRegression, LogisticRegression,
@@ -227,18 +226,20 @@ names = ['Linear Regression','Logistic Regression', 'Support Vector Regression',
          'Lasso Regression','Lasso Regression 2','Ridge Regression','Bayesian Ridge Regression','Kernel Ridge Regression','Kernel Ridge Regression 2',
          'Elastic Net Regularization','Elastic Net Regularization 2','Extra Trees Regression']
 
-def rmse(model, X, y):
-    rmse = np.sqrt(-cross_val_score(model, X, y, scoring="neg_mean_squared_error", cv=25))
+def rmse(model, X, y, cvv):
+    rmse = np.sqrt(-cross_val_score(model, X, y, scoring="neg_mean_squared_error", cv=cvv))
     return rmse
 
 from sklearn.model_selection import KFold, cross_val_score
 warnings.filterwarnings('ignore')
 
 # Perform 5-folds cross-validation to evaluate the models 
-for model, name in zip(models, names):
-    # Root mean square error
-    score = rmse(model, X_train_scaled, y_train_transformed)
-    print("- {}: Mean: {:.6f}, Std: {:4f}".format(name, score.mean(), score.std()))
+
+def estimator_function(X, y, cvv):
+    for model, name in zip(models, names):
+        # Root mean square error
+        score = rmse(model, X, y, cvv)
+        print("- {}: Mean: {:.6f}, Std: {:4f}".format(name, score.mean(), score.std()))
 
 
 # ----------------------------------------------------------------- #
@@ -253,11 +254,12 @@ for model, name in zip(models, names):
 
 # Final step - applying models and predictions. Save results
 test_data = pd.read_csv('test.csv')
-model = LinearRegression()
-model.fit(X_train_scaled, y_train_transformed)
+model1 = LinearRegression()
+model2 = GradientBoostingRegressor()
+model2.fit(X_train_scaled_ma, y_train_transformed)
 
 # Generate the predictions running the model in the test data
-predictions = np.exp(model.predict(X_test_scaled))
+predictions = np.exp(model2.predict(X_test_scaled_ma))
 
 # Create the output file 
 output = pd.DataFrame({'Id': test_data['Id'], 'SalePrice': predictions})
