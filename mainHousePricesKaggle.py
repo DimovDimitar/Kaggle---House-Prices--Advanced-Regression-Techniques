@@ -193,10 +193,10 @@ robust_scaler = RobustScaler()
 max_abs_scaler = MaxAbsScaler()
 
 X_train_scaled_r = robust_scaler.fit(X_train).transform(X_train)
-X_test_scaled_r = robust_scaler.transform(X_test)
+X_test_scaled_r = robust_scaler.fit(X_test).transform(X_test)
 
 X_train_scaled_ma = max_abs_scaler.fit(X_train).transform(X_train)
-X_test_scaled_ma = max_abs_scaler.transform(X_test)
+X_test_scaled_ma = max_abs_scaler.fit(X_test).transform(X_test)
 
 #full_data2 = pd.concat([X_train, X_test])
 
@@ -254,15 +254,16 @@ def estimator_function(X, y, cvv):
 
 # Final step - applying models and predictions. Save results
 test_data = pd.read_csv('test.csv')
-model1 = LinearRegression()
+#model1 = LinearRegression()
 model2 = GradientBoostingRegressor()
 model2.fit(X_train_scaled_ma, y_train_transformed)
 
 # Generate the predictions running the model in the test data
-predictions = np.exp(model2.predict(X_test_scaled_ma))
+#predictions1 = np.exp(model2.predict(X_test_scaled_ma))
+predictions2 = np.exp(model2.predict(X_test_scaled_ma))
 
 # Create the output file 
-output = pd.DataFrame({'Id': test_data['Id'], 'SalePrice': predictions})
+output = pd.DataFrame({'Id': test_data['Id'], 'SalePrice': predictions2})
 output.to_csv('submission.csv', index=False)
 
 print("Your submission was successfully saved!")

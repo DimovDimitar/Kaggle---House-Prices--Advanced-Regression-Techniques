@@ -362,6 +362,13 @@ Heating: Type of heating
        Grav	Gravity furnace	
        OthW	Hot water or steam heat other than gas
        Wall	Wall furnace
+
+heating_dic = {"Floor":0.1,
+       "GasA":0.2,
+       "GasW":0.3,
+       "Grav":0.4,
+       "OthW":0.5,
+       "Wall":0.6}
 		
 HeatingQC: Heating quality and condition
 
@@ -370,11 +377,19 @@ HeatingQC: Heating quality and condition
        TA	Average/Typical
        Fa	Fair
        Po	Poor
-		
+
+heating_qual_dic = {  "Ex":0.1,
+      "Gd":0.2,
+       "TA":0.3,
+       "Fa":0.4,
+       "Po":0.5}
+
 CentralAir: Central air conditioning
 
        N	No
        Y	Yes
+
+central_air_dic = {"N" : 0.1, "Y" : 0.2)
 		
 Electrical: Electrical system
 
@@ -547,3 +562,10 @@ SaleCondition: Condition of sale
        Alloca	Allocation - two linked properties with separate deeds, typically condo with a garage unit	
        Family	Sale between family members
        Partial	Home was not completed when last assessed (associated with New Homes)
+
+sale_condition_dic = {       "Normal":0.1,
+       "Abnorml":0.2,
+       "AdjLand":0.3,
+       "Alloca":0.4,
+       "Family":0.5,
+       "Partial":0.6}
